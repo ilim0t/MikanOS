@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  build_efi:
+    build: .
+    working_dir: /root/mikanos/bootloader
+    command: make
+    privileged: true
+    volumes:
+      - ./:/root/mikanos/
+
+  run_qemu:
+    build: .
+    command: /root/osbook/devenv/run_qemu.sh /root/mikanos/bootloader/hello.efi
+    privileged: true
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./:/root/mikanos/
+    environment:
+      - DISPLAY
