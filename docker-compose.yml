@@ -4,7 +4,6 @@ services:
     build: .
     working_dir: /root/mikanos/bootloader
     command: make
-    privileged: true
     volumes:
       - ./:/root/mikanos/
 
@@ -13,7 +12,8 @@ services:
     command: /root/osbook/devenv/run_qemu.sh /root/mikanos/bootloader/hello.efi
     privileged: true
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.Xauthority:/root/.Xauthority
       - ./:/root/mikanos/
     environment:
       - DISPLAY
+    network_mode: "host"
