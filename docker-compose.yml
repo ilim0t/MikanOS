@@ -2,10 +2,12 @@ version: "3.9"
 services:
   build_efi:
     build: .
-    working_dir: /root/mikanos/bootloader
-    command: make
+    working_dir: /root/edk2/
+    command: bash -c "source edksetup.sh && build && cp /root/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi /root/Build/"
     volumes:
-      - ./:/root/mikanos/
+      - ./bootloader/MikanLoaderPkg/:/root/edk2/MikanLoaderPkg/
+      - ./bootloader/target.txt:/root/edk2/Conf/target.txt
+      - ./bootloader/Build:/root/Build/
 
   run_qemu:
     build: .
