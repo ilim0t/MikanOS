@@ -11,7 +11,7 @@ services:
 
   run_qemu:
     build: .
-    command: /root/osbook/devenv/run_qemu.sh /root/mikanos/bootloader/hello.efi
+    command: /root/osbook/devenv/run_qemu.sh /root/mikanos/bootloader/Build/Loader.efi
     privileged: true
     volumes:
       - ~/.Xauthority:/root/.Xauthority
