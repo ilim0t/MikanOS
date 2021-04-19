@@ -1,2 +1,4 @@
 *.efi
 *.img
+*.elf
+*.o
