@@ -10,7 +10,7 @@
 ## Build
 
 ```sh=
-docker-compose up build_efi
+docker-compose up build_efi build_kernel
 ```
 
 ## Run

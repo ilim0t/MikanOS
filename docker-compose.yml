@@ -9,9 +9,17 @@ services:
       - ./bootloader/target.txt:/root/edk2/Conf/target.txt
       - ./bootloader/Build:/root/Build/
 
+  build_kernel:
+    build: .
+    working_dir: /root/mikanos/kernel/
+    command: make
+    volumes:
+      - ./:/root/mikanos/
+
   run_qemu:
     build: .
-    command: /root/osbook/devenv/run_qemu.sh /root/mikanos/bootloader/Build/Loader.efi /root/mikanos/kernel/kernel.elf
+    command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi kernel/kernel.elf
+    working_dir: /root/mikanos/
     privileged: true
     volumes:
       - ~/.Xauthority:/root/.Xauthority
