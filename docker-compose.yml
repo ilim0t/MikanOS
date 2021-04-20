@@ -12,7 +12,7 @@ services:
   build_kernel:
     build: .
     working_dir: /root/mikanos/kernel/
-    command: make
+    command: bash -c "source /root/osbook/devenv/buildenv.sh && make"
     volumes:
       - ./:/root/mikanos/
 
