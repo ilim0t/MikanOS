@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <new>
+
 #include "frame_buffer_config.hpp"
 
 struct PixelColor {
@@ -13,9 +14,7 @@ class PixelWriter {
   virtual void Write(int x, int y, const PixelColor& c) = 0;
 
  protected:
-  uint8_t* PixelAt(int x, int y) {
-    return config_.frame_buffer + 4 * (config_.pixels_per_scan_line * y + x);
-  }
+  uint8_t* PixelAt(int x, int y) { return config_.frame_buffer + 4 * (config_.pixels_per_scan_line * y + x); }
 
  private:
   const FrameBufferConfig& config_;
@@ -48,18 +47,14 @@ class BGRResv8BitPerColorPixelWriter : public PixelWriter {
 void operator delete(void* obj) noexcept {}
 
 extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
-  alignas(RGBResv8BitPerColorPixelWriter) char pixel_writer_buf[sizeof(
-      RGBResv8BitPerColorPixelWriter)];  //     charである必要はなく1byteの型ならなんでも良い
+  alignas(RGBResv8BitPerColorPixelWriter) char
+      pixel_writer_buf[sizeof(RGBResv8BitPerColorPixelWriter)];  // charである必要はなく1byteの型ならなんでも良い
   PixelWriter* pixel_writer;
 
-  if (frame_buffer_config.pixel_format ==
-      PixelFormat::kPixelRGBResv8BitPerColor) {
-    pixel_writer = new (pixel_writer_buf)
-        RGBResv8BitPerColorPixelWriter{frame_buffer_config};
-  } else if (frame_buffer_config.pixel_format ==
-             PixelFormat::kPixelBGRResv8BitPerColor) {
-    pixel_writer = new (pixel_writer_buf)
-        BGRResv8BitPerColorPixelWriter(frame_buffer_config);
+  if (frame_buffer_config.pixel_format == PixelFormat::kPixelRGBResv8BitPerColor) {
+    pixel_writer = new (pixel_writer_buf) RGBResv8BitPerColorPixelWriter{frame_buffer_config};
+  } else if (frame_buffer_config.pixel_format == PixelFormat::kPixelBGRResv8BitPerColor) {
+    pixel_writer = new (pixel_writer_buf) BGRResv8BitPerColorPixelWriter(frame_buffer_config);
   } else {
   }
 
