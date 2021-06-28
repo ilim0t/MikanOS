@@ -250,7 +250,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image_handle,
   }
 
   UINTN file_info_size = sizeof(EFI_FILE_INFO) + sizeof(CHAR16) * 12;
-  alignas(alignof(EFI_FILE_INFO)) UINT8 file_info_buffer[file_info_size];
+  alignas(EFI_FILE_INFO) UINT8 file_info_buffer[file_info_size];
   status = kernel_file->GetInfo(kernel_file, &gEfiFileInfoGuid, &file_info_size,
                                 file_info_buffer);
   if (EFI_ERROR(status)) {
