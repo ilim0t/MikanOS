@@ -2,5 +2,6 @@
 *.img
 *.elf
 *.o
+*.d
 
 dev/logs/
