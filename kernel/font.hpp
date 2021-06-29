@@ -7,3 +7,5 @@
 const uint8_t* GetFont(const char c);
 
 void WriteAscii(PixelWriter& writer, int x, int y, char c, const PixelColor& color);
+
+void WriteString(PixelWriter& writer, const int x, const int y, const char* s, const PixelColor& color);
