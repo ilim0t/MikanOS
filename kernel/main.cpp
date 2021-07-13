@@ -1,11 +1,29 @@
 // #include <cstdint>
+#include <cstdio>
 #include <new>
 
+#include "console.hpp"
 #include "font.hpp"
 #include "frame_buffer_config.hpp"
 #include "graphics.hpp"
 
+int printk(const char* format, ...) {
+  va_list ap;
+  int result;
+  char s[1024];
+
+  va_start(ap, format);
+  result = vsprintf(s, format, ap);
+  va_end(ap);
+
+  console->PutString(s);
+  return result;
+}
+
 void operator delete(void* obj) noexcept {}
+
+alignas(Console) char console_buf[sizeof(Console)];  // charである必要はなく1byteの型ならなんでも良い
+Console* console;
 
 extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
   alignas(RGBResv8BitPerColorPixelWriter) char
@@ -27,15 +45,17 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
 
   for (int x = 0; x < 200; ++x) {
     for (int y = 0; y < 100; ++y) {
-      pixel_writer->Write(100 + x, 100 + y, {0, 255, 0});
+      pixel_writer->Write(x, y, {0, 255, 0});
     }
   }
 
-  int i = 0;
-  for (char c = '!'; c <= '~'; ++c, ++i) {
-    WriteAscii(*pixel_writer, 8 * i, 50, c, {0, 0, 0});
+  char buf[128];
+
+  console = new (console_buf) Console(*pixel_writer, {0, 0, 0}, {255, 255, 255});
+  for (int i = 0; i < 30; i++) {
+    sprintf(buf, "line: %d\n", i);
+    console->PutString(buf);
   }
-  WriteString(*pixel_writer, 0, 66, "Hello, world!", {0, 0, 255});
 
   while (1) {
     __asm__("hlt");

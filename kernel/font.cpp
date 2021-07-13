@@ -13,7 +13,7 @@ const uint8_t* GetFont(const char c) {
 }
 
 void WriteAscii(PixelWriter& writer, const int x, const int y, const char c, const PixelColor& color) {
-  const uint8_t* font = GetFont(c);
+  const uint8_t* const font = GetFont(c);
   if (font == nullptr) {
     return;
   }
@@ -26,7 +26,7 @@ void WriteAscii(PixelWriter& writer, const int x, const int y, const char c, con
   }
 }
 
-void WriteString(PixelWriter& writer, const int x, const int y, const char* s, const PixelColor& color) {
+void WriteString(PixelWriter& writer, const int x, const int y, const char* const s, const PixelColor& color) {
   for (int i = 0; s[i] != '\0'; i++) {
     WriteAscii(writer, x + 8 * i, y, s[i], color);
   }
