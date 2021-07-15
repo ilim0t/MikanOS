@@ -2,6 +2,7 @@ version: "3.9"
 services:
   build_efi:
     build: .
+    platform: linux/amd64
     working_dir: /root/edk2/
     command: bash -c "source edksetup.sh && build && cp /root/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi /root/Build/"
     volumes:
@@ -11,13 +12,16 @@ services:
 
   build_kernel:
     build: .
+    platform: linux/amd64
     working_dir: /root/mikanos/kernel/
     command: bash -c "source /root/osbook/devenv/buildenv.sh && make"
     volumes:
       - ./:/root/mikanos/
 
   run_qemu:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-qemu
     command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi kernel/kernel.elf
     working_dir: /root/mikanos/
     privileged: true

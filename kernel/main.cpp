@@ -7,6 +7,11 @@
 #include "frame_buffer_config.hpp"
 #include "graphics.hpp"
 
+void operator delete(void* obj) noexcept {}
+
+alignas(Console) char console_buf[sizeof(Console)];  // charである必要はなく1byteの型ならなんでも良い
+Console* console;
+
 int printk(const char* format, ...) {
   va_list ap;
   int result;
@@ -19,12 +24,6 @@ int printk(const char* format, ...) {
   console->PutString(s);
   return result;
 }
-
-void operator delete(void* obj) noexcept {}
-
-alignas(Console) char console_buf[sizeof(Console)];  // charである必要はなく1byteの型ならなんでも良い
-Console* console;
-
 extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
   alignas(RGBResv8BitPerColorPixelWriter) char
       pixel_writer_buf[sizeof(RGBResv8BitPerColorPixelWriter)];  // charである必要はなく1byteの型ならなんでも良い
