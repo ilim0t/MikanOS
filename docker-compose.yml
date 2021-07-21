@@ -18,11 +18,36 @@ services:
     volumes:
       - ./:/root/mikanos/
 
+  build_rkernel:
+    build:
+      context: .
+      dockerfile: Dockerfile-rust
+    working_dir: /root/mikanos/rkernel/
+    command: cargo build --release
+    volumes:
+      - ./:/root/mikanos/
+
+    #  VSCode + rust-analyzer + clippy + Error Lens
+
   run_qemu:
     build:
       context: .
       dockerfile: Dockerfile-qemu
     command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi kernel/kernel.elf
+    working_dir: /root/mikanos/
+    privileged: true
+    volumes:
+      - ~/.Xauthority:/root/.Xauthority
+      - ./:/root/mikanos/
+    environment:
+      - DISPLAY
+    network_mode: "host"
+
+  run_rqemu:
+    build:
+      context: .
+      dockerfile: Dockerfile-qemu
+    command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi rkernel/target/x86_64-unknown-none/release/kernel.elf
     working_dir: /root/mikanos/
     privileged: true
     volumes:

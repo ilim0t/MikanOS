@@ -1,0 +1,6 @@
+FROM rust:slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN rustup toolchain install nightly && \
+    rustup component add rust-src --toolchain nightly
