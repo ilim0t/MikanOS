@@ -6,7 +6,7 @@
 
 ```txt=
 MikanOS
-├── README.md           : 今見ているファイル
+├── README.md           : 今見ているリポジトリの説明が書かれたファイル
 ├── bootloader/         : bootloader (C)
 ├── ckernel/            : kernel (C++)
 ├── dev/                : 開発者用ツール
@@ -22,7 +22,7 @@ MikanOS
 
 > X Server に XQuartz を使う場合は、環境設定の「ネットワーク・クライアントからの接続を許可」のチェックボックスをオンにしてください。
 
-## The kernel written in C
+## The kernel written in C++
 
 ### Build
 
@@ -33,7 +33,7 @@ docker-compose up build_efi build_ckernel
 ### Run
 
 ```sh=
-docker-compose up run_qemu
+docker-compose up run_cqemu
 ```
 
 If you are using XQuartz, you will need to set the DISPLAY variable as follows.
