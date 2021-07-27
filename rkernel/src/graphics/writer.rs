@@ -9,19 +9,12 @@ pub struct Writer<'global> {
 
 impl Writer<'_> {
     pub fn new(config: &FrameBufferConfig) -> Writer {
-        let &FrameBufferConfig {
-            pixel_format,
-            pixels_per_scan_line,
-            vertical_resolution,
-            horizontal_resolution,
-            ..
-        } = config;
         Writer {
             frame_buffer: config.get_slice(),
-            pixel_format,
-            pixels_per_scan_line: pixels_per_scan_line as usize,
-            horizontal_resolution: horizontal_resolution as usize,
-            vertical_resolution: vertical_resolution as usize,
+            pixel_format: config.pixel_format,
+            pixels_per_scan_line: config.pixels_per_scan_line as usize,
+            horizontal_resolution: config.horizontal_resolution as usize,
+            vertical_resolution: config.vertical_resolution as usize,
         }
     }
 

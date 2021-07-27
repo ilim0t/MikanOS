@@ -2,7 +2,8 @@ use super::*;
 use core::slice;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy)]
 #[repr(C)] // 推測
            // #[repr(u32)]  // 明示的指定
 pub enum PixelFormat {
@@ -49,7 +50,7 @@ impl FrameBufferConfig {
     fn at(&self, Point { x, y }: &Point) -> &dyn RefColor {
         let offset = 4 * (self.pixels_per_scan_line as usize * y + x);
 
-        let ptr: *const u8 = unsafe { self.frame_buffer.offset(offset as isize) };
+        let ptr: *const u8 = unsafe { self.frame_buffer.add(offset) };
         let ref_color = self.pixel_format.convert_into_ref_color(ptr);
         unsafe { &*ref_color }
     }
@@ -58,7 +59,7 @@ impl FrameBufferConfig {
     fn at_mut(&mut self, Point { x, y }: &Point) -> &mut dyn RefColor {
         let offset = 4 * (self.pixels_per_scan_line as usize * y + x);
 
-        let ptr = unsafe { self.frame_buffer.offset(offset as isize) };
+        let ptr = unsafe { self.frame_buffer.add(offset) };
         let ref_color = self.pixel_format.convert_into_ref_color_mut(ptr);
         unsafe { &mut *ref_color }
     }
