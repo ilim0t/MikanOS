@@ -2,6 +2,8 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+use rkernel::graphics::{Color, FrameBufferConfig, Point, Writer};
+use rkernel::misc::*;
 
 /// この関数はパニック時に呼ばれる
 #[panic_handler]
@@ -9,37 +11,29 @@ fn panic(_panic: &PanicInfo) -> ! {
     loop {}
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(C)] // 推測
-           // #[repr(u32)]  // 明示的指定
-pub enum PixelFormat {
-    KPixelRGBReserved8BitPerColor,
-    KPixelBGRReserved8BitPerColor,
-}
-
-#[repr(C)]
-pub struct FrameBufferConfig {
-    pub frame_buffer: *mut u8,
-    pub pixels_per_scan_line: u32,
-    pub horizontal_resolution: u32,
-    pub vertical_resolution: u32,
-    pub pixel_format: PixelFormat,
-}
-
 #[no_mangle]
-pub extern "C" fn _start(frame_buffer_config: &mut FrameBufferConfig) {
-    for x in 0..frame_buffer_config.horizontal_resolution {
-        for y in 0..frame_buffer_config.vertical_resolution {
-            let pixel = (frame_buffer_config.frame_buffer as u32
-                + 4 * (frame_buffer_config.pixels_per_scan_line * y + x))
-                as *mut u8;
-            unsafe {
-                *pixel.offset(0) = 55;
-                *pixel.offset(1) = 155;
-                *pixel.offset(2) = 255;
-            }
+pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
+    let mut writer = Writer::new(frame_buffer_config);
+
+    writer.write_all(&Color {
+        r: 200,
+        g: 200,
+        b: 200,
+    });
+
+    // let point = writer.at(&Point { x: 120000, y: 200000 });  // panic
+
+    for x in 100..200 {
+        for y in 150..350 {
+            writer.write(
+                &Point { x, y },
+                &Color {
+                    r: 255,
+                    g: 100,
+                    b: 100,
+                },
+            );
         }
     }
-    loop {}
+    halt();
 }
