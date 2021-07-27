@@ -10,10 +10,10 @@ services:
       - ./bootloader/target.txt:/root/edk2/Conf/target.txt
       - ./bootloader/Build:/root/Build/
 
-  build_kernel:
+  build_ckernel:
     build: .
     platform: linux/amd64
-    working_dir: /root/mikanos/kernel/
+    working_dir: /root/mikanos/ckernel/
     command: bash -c "source /root/osbook/devenv/buildenv.sh && make"
     volumes:
       - ./:/root/mikanos/
@@ -29,11 +29,11 @@ services:
 
     #  VSCode + rust-analyzer + clippy + Error Lens
 
-  run_qemu:
+  run_cqemu:
     build:
       context: .
       dockerfile: Dockerfile-qemu
-    command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi kernel/kernel.elf
+    command: /root/osbook/devenv/run_qemu.sh bootloader/Build/Loader.efi ckernel/kernel.elf
     working_dir: /root/mikanos/
     privileged: true
     volumes:

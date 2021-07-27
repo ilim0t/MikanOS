@@ -1,4 +1,4 @@
 source /root/osbook/devenv/buildenv.sh
-cd /root/mikanos/kernel/
+cd /root/mikanos/ckernel/
 make
 cd -
