@@ -2,7 +2,7 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use rkernel::graphics::{Color, FrameBufferConfig, Point, Writer};
+use rkernel::graphics::{Color, FrameBufferConfig, PixelPoint, Writer};
 use rkernel::misc::*;
 
 /// この関数はパニック時に呼ばれる
@@ -22,10 +22,10 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
     });
     // let point = writer.at(&Point { x: 120000, y: 200000 });  // panic
 
-    for x in 0..writer.horizontal_resolution {
+    for x in 0..writer.frame_size.horizontal_resolution {
         for y in 0..100 {
             writer.write(
-                &Point { x, y },
+                &PixelPoint { x, y },
                 &Color {
                     r: 50,
                     g: 100,
@@ -34,5 +34,6 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
             );
         }
     }
+
     halt();
 }

@@ -1,63 +1,80 @@
+use super::*;
 use core::slice;
 
-use super::*;
+#[repr(C)]
+pub struct Buffer(u8, u8, u8, u8);
 
-pub struct Writer<'global> {
-    frame_buffer: &'global mut [u8],
-    pixel_format: PixelFormat,
-    pixels_per_scan_line: usize,
+pub struct FrameSize {
     pub horizontal_resolution: usize,
     pub vertical_resolution: usize,
 }
 
+pub struct Writer<'global> {
+    frame_buffer: &'global mut [Buffer],
+    pixel_format: PixelFormat,
+    pub frame_size: FrameSize,
+    pixels_per_scan_line: usize,
+}
+
 impl Writer<'_> {
     pub fn new(config: &FrameBufferConfig) -> Writer {
+        let frame_size = FrameSize {
+            horizontal_resolution: config.horizontal_resolution as usize,
+            vertical_resolution: config.vertical_resolution as usize,
+        };
+        let pixels_per_scan_line = config.pixels_per_scan_line as usize;
         let frame_buffer = unsafe {
             slice::from_raw_parts_mut(
-                config.frame_buffer,
-                (config.vertical_resolution * config.pixels_per_scan_line * 4) as usize,
+                config.frame_buffer as *mut Buffer,
+                frame_size.vertical_resolution * pixels_per_scan_line,
             )
         };
 
         Writer {
             frame_buffer,
             pixel_format: config.pixel_format,
-            pixels_per_scan_line: config.pixels_per_scan_line as usize,
-            horizontal_resolution: config.horizontal_resolution as usize,
-            vertical_resolution: config.vertical_resolution as usize,
+            frame_size,
+
+            pixels_per_scan_line,
         }
     }
 
-    pub fn write(&mut self, point: &Point, &Color { r, g, b }: &Color) {
-        let pixel = self.at_mut(point);
-        *pixel.r_mut() = r;
-        *pixel.g_mut() = g;
-        *pixel.b_mut() = b;
+    fn get_slice_index(&self, PixelPoint { x, y }: &PixelPoint) -> usize {
+        assert!(*x < self.frame_size.horizontal_resolution);
+        assert!(*y < self.frame_size.vertical_resolution);
+        self.pixels_per_scan_line * y + x
+    }
+
+    pub fn at(&self, point: &PixelPoint) -> &Buffer {
+        &self.frame_buffer[self.get_slice_index(point)]
+    }
+
+    fn at_mut(&mut self, point: &PixelPoint) -> &mut Buffer {
+        &mut self.frame_buffer[self.get_slice_index(point)]
+    }
+
+    pub fn write(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
+        match self.pixel_format {
+            PixelFormat::KPixelRGBReserved8BitPerColor => {
+                let pixel_buffer = self.at_mut(point);
+                pixel_buffer.0 = b;
+                pixel_buffer.1 = g;
+                pixel_buffer.2 = r;
+            }
+            PixelFormat::KPixelBGRReserved8BitPerColor => {
+                let pixel_buffer = self.at_mut(point);
+                pixel_buffer.0 = r;
+                pixel_buffer.1 = g;
+                pixel_buffer.2 = b;
+            }
+        };
     }
 
     pub fn write_all(&mut self, color: &Color) {
         for x in 0..self.pixels_per_scan_line {
-            for y in 0..self.vertical_resolution {
-                self.write(&Point { x, y }, color);
+            for y in 0..self.frame_size.vertical_resolution {
+                self.write(&PixelPoint { x, y }, color);
             }
         }
-    }
-
-    fn get_slice_index(&self, Point { x, y }: &Point) -> usize {
-        assert!(*x < self.horizontal_resolution);
-        assert!(*y < self.vertical_resolution);
-        4 * (self.pixels_per_scan_line * y + x)
-    }
-
-    pub fn at(&self, point: &Point) -> &dyn RefColor {
-        let ptr = &self.frame_buffer[self.get_slice_index(point)] as *const u8;
-        let ref_color = self.pixel_format.convert_into_ref_color(ptr);
-        unsafe { &*ref_color }
-    }
-
-    fn at_mut(&mut self, point: &Point) -> &mut dyn RefColor {
-        let ptr = &mut self.frame_buffer[self.get_slice_index(point)] as *mut u8;
-        let ref_color = self.pixel_format.convert_into_ref_color_mut(ptr);
-        unsafe { &mut *ref_color }
     }
 }
