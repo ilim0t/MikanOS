@@ -48,18 +48,18 @@ impl FrameBufferConfig {
 
     #[allow(dead_code)]
     fn at(&self, Point { x, y }: &Point) -> &dyn RefColor {
-        let offset = 4 * (self.pixels_per_scan_line as usize * y + x);
+        let count = 4 * (self.pixels_per_scan_line as usize * y + x);
 
-        let ptr: *const u8 = unsafe { self.frame_buffer.add(offset) };
+        let ptr: *const u8 = unsafe { self.frame_buffer.add(count) };
         let ref_color = self.pixel_format.convert_into_ref_color(ptr);
         unsafe { &*ref_color }
     }
 
     #[allow(dead_code)]
     fn at_mut(&mut self, Point { x, y }: &Point) -> &mut dyn RefColor {
-        let offset = 4 * (self.pixels_per_scan_line as usize * y + x);
+        let count = 4 * (self.pixels_per_scan_line as usize * y + x);
 
-        let ptr = unsafe { self.frame_buffer.add(offset) };
+        let ptr = unsafe { self.frame_buffer.add(count) };
         let ref_color = self.pixel_format.convert_into_ref_color_mut(ptr);
         unsafe { &mut *ref_color }
     }

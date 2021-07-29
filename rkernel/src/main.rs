@@ -16,21 +16,20 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
     let mut writer = Writer::new(frame_buffer_config);
 
     writer.write_all(&Color {
-        r: 200,
-        g: 200,
-        b: 200,
+        r: 50,
+        g: 50,
+        b: 50,
     });
-
     // let point = writer.at(&Point { x: 120000, y: 200000 });  // panic
 
-    for x in 100..200 {
-        for y in 150..350 {
+    for x in 0..writer.horizontal_resolution {
+        for y in 0..100 {
             writer.write(
                 &Point { x, y },
                 &Color {
-                    r: 255,
+                    r: 50,
                     g: 100,
-                    b: 100,
+                    b: 50,
                 },
             );
         }

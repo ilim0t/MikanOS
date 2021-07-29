@@ -57,6 +57,7 @@ impl RefColor for PixelRGBColor {
         &mut self.b
     }
 }
+
 impl RefColor for PixelBGRColor {
     fn r(&self) -> &u8 {
         &self.r
