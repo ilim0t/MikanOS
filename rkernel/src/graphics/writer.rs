@@ -1,9 +1,9 @@
 use super::config::PixelFormat;
 use super::{font, Color, FrameBufferConfig, PixelPoint};
-use core::ptr;
 use core::slice;
+use volatile::Volatile;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 #[repr(align(4))]
 pub struct Buffer(u8, u8, u8);
 
@@ -15,7 +15,7 @@ pub struct FrameSize {
 
 #[derive(Debug)]
 pub struct PixelWriter {
-    frame_buffer: &'static mut [Buffer],
+    frame_buffer: &'static mut [Volatile<Buffer>],
     pixel_format: PixelFormat,
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
@@ -30,7 +30,7 @@ impl PixelWriter {
         let pixels_per_scan_line = config.pixels_per_scan_line as usize;
         let frame_buffer = unsafe {
             slice::from_raw_parts_mut(
-                config.frame_buffer as *mut Buffer,
+                config.frame_buffer as *mut Volatile<Buffer>,
                 frame_size.height * pixels_per_scan_line,
             )
         };
@@ -50,11 +50,11 @@ impl PixelWriter {
         self.pixels_per_scan_line * y + x
     }
 
-    pub fn at(&self, point: &PixelPoint) -> &Buffer {
+    pub fn at(&self, point: &PixelPoint) -> &Volatile<Buffer> {
         &self.frame_buffer[self.get_slice_index(point)]
     }
 
-    fn at_mut(&mut self, point: &PixelPoint) -> &mut Buffer {
+    fn at_mut(&mut self, point: &PixelPoint) -> &mut Volatile<Buffer> {
         &mut self.frame_buffer[self.get_slice_index(point)]
     }
 
@@ -62,19 +62,11 @@ impl PixelWriter {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                unsafe {
-                    ptr::write_volatile(&mut pixel_buffer.0, r);
-                    ptr::write_volatile(&mut pixel_buffer.1, g);
-                    ptr::write_volatile(&mut pixel_buffer.2, b);
-                }
+                pixel_buffer.write(Buffer(r, g, b));
             }
             PixelFormat::KPixelBGRReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                unsafe {
-                    ptr::write_volatile(&mut pixel_buffer.0, b);
-                    ptr::write_volatile(&mut pixel_buffer.1, g);
-                    ptr::write_volatile(&mut pixel_buffer.2, r);
-                }
+                pixel_buffer.write(Buffer(b, g, r));
             }
         };
     }
