@@ -35,5 +35,15 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
         }
     }
 
+    writer.write_ascii(
+        &PixelPoint { x: 80, y: 80 },
+        '?',
+        &Color {
+            r: 255,
+            g: 255,
+            b: 255,
+        },
+    );
+
     halt();
 }
