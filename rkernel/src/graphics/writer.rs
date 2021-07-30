@@ -1,5 +1,6 @@
 use super::config::PixelFormat;
 use super::{font, Color, FrameBufferConfig, PixelPoint};
+use core::ptr;
 use core::slice;
 
 #[derive(Debug)]
@@ -61,15 +62,19 @@ impl PixelWriter {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = b;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = r;
+                unsafe {
+                    ptr::write_volatile(&mut pixel_buffer.0, r);
+                    ptr::write_volatile(&mut pixel_buffer.1, g);
+                    ptr::write_volatile(&mut pixel_buffer.2, b);
+                }
             }
             PixelFormat::KPixelBGRReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = r;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = b;
+                unsafe {
+                    ptr::write_volatile(&mut pixel_buffer.0, b);
+                    ptr::write_volatile(&mut pixel_buffer.1, g);
+                    ptr::write_volatile(&mut pixel_buffer.2, r);
+                }
             }
         };
     }
