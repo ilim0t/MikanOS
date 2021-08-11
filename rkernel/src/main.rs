@@ -36,14 +36,39 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
     }
 
     writer.write_ascii(
-        &PixelPoint { x: 80, y: 80 },
-        '?',
+        &PixelPoint { x: 0, y: 0 },
+        b'a',
         &Color {
             r: 255,
             g: 255,
             b: 255,
         },
     );
+
+    writer.write_strings(
+        &PixelPoint { x: 0, y: 16 },
+        b"Hello, world!",
+        &Color {
+            r: 255,
+            g: 255,
+            b: 255,
+        },
+    );
+
+    for i in 0..0xff {
+        writer.write_ascii(
+            &PixelPoint {
+                x: (8 * (i % 20)) as usize,
+                y: 48 + (16 * (i / 20)) as usize,
+            },
+            i,
+            &Color {
+                r: 255,
+                g: 255,
+                b: 255,
+            },
+        );
+    }
 
     halt();
 }

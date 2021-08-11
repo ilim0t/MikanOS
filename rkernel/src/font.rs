@@ -1,8 +1,4 @@
-pub trait Font {
-    fn get_pixel(&self, x: usize, y: usize) -> bool;
-}
-
-pub fn get_font_data(string: char) -> [u8; 16] {
+pub fn get_font_data(string: u8) -> [u8; 16] {
     match string as u8 {
         0x00 => [
             0b00000000,

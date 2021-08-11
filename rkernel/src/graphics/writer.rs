@@ -78,7 +78,13 @@ impl Writer<'_> {
         }
     }
 
-    pub fn write_ascii(&mut self, PixelPoint { x, y }: &PixelPoint, c: char, color: &Color) {
+    pub fn write_strings(&mut self, &PixelPoint { x, y }: &PixelPoint, s: &[u8], color: &Color) {
+        for (i,& c) in s.iter().enumerate() {
+            self.write_ascii(&PixelPoint { x: x + i * 8, y }, c, color);
+        }
+    }
+
+    pub fn write_ascii(&mut self, PixelPoint { x, y }: &PixelPoint, c: u8, color: &Color) {
         let font = crate::font::get_font_data(c);
 
         for dy in 0..16 {
