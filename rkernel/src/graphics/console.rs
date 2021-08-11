@@ -50,15 +50,15 @@ impl StringBuffer {
     }
 }
 
-pub struct Console<'a> {
-    writer: Writer<'a>,
+pub struct Console {
+    writer: Writer,
     bg_color: Color,
     fg_color: Color,
     cursor: Cursor,
     buffer: StringBuffer,
 }
 
-impl Console<'_> {
+impl Console {
     pub fn new(writer: Writer, bg_color: Color, fg_color: Color) -> Console {
         let mut console = Console {
             writer,
@@ -124,7 +124,7 @@ impl Console<'_> {
     }
 }
 
-impl fmt::Write for Console<'_> {
+impl fmt::Write for Console {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
         Ok(())
