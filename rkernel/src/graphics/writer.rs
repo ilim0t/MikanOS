@@ -79,7 +79,7 @@ impl Writer {
     }
 
     pub fn write_bytes(&mut self, &PixelPoint { x, y }: &PixelPoint, bytes: &[u8], color: &Color) {
-        for (i,& c) in bytes.iter().enumerate() {
+        for (i, &c) in bytes.iter().enumerate() {
             self.write_byte(&PixelPoint { x: x + i * 8, y }, c, color);
         }
     }
@@ -87,11 +87,10 @@ impl Writer {
     pub fn write_byte(&mut self, PixelPoint { x, y }: &PixelPoint, byte: u8, color: &Color) {
         let font = crate::font::get_font_data(byte);
 
-        for dy in 0..16 {
+        for (dy, line) in font.iter().enumerate() {
             for dx in 0..8 {
-                let a = font[dy];
-                let b = 0b1u8 << (7 - dx);
-                if (a & b) != 0 {
+                let mask = 1 << (7 - dx);
+                if (line & mask) != 0 {
                     self.write_pixel(
                         &PixelPoint {
                             x: x + dx,

@@ -3,7 +3,7 @@
 
 use core::fmt::Write;
 use core::panic::PanicInfo;
-use rkernel::graphics::{Color, Console, FrameBufferConfig, PixelPoint, Writer};
+use rkernel::graphics::{Color, Console, FrameBufferConfig, Writer};
 use rkernel::misc::*;
 
 /// この関数はパニック時に呼ばれる
