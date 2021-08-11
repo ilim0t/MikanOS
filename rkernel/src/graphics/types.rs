@@ -1,7 +1,7 @@
 #[derive(Clone, Copy)]
 pub struct PixelPoint {
-    pub x: usize, // Column
-    pub y: usize, // Row
+    pub x: usize, // Column, Width
+    pub y: usize, // Row, Height
 }
 
 #[derive(Clone, Copy)]

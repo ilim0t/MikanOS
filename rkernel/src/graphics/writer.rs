@@ -5,8 +5,8 @@ use core::slice;
 pub struct Buffer(u8, u8, u8, u8);
 
 pub struct FrameSize {
-    pub horizontal_resolution: usize,
-    pub vertical_resolution: usize,
+    pub width: usize,
+    pub height: usize,
 }
 
 pub struct Writer<'global> {
@@ -19,14 +19,14 @@ pub struct Writer<'global> {
 impl Writer<'_> {
     pub fn new(config: &FrameBufferConfig) -> Writer {
         let frame_size = FrameSize {
-            horizontal_resolution: config.horizontal_resolution as usize,
-            vertical_resolution: config.vertical_resolution as usize,
+            width: config.horizontal_resolution as usize,
+            height: config.vertical_resolution as usize,
         };
         let pixels_per_scan_line = config.pixels_per_scan_line as usize;
         let frame_buffer = unsafe {
             slice::from_raw_parts_mut(
                 config.frame_buffer as *mut Buffer,
-                frame_size.vertical_resolution * pixels_per_scan_line,
+                frame_size.height * pixels_per_scan_line,
             )
         };
 
@@ -40,8 +40,8 @@ impl Writer<'_> {
     }
 
     fn get_slice_index(&self, PixelPoint { x, y }: &PixelPoint) -> usize {
-        assert!(*x < self.frame_size.horizontal_resolution);
-        assert!(*y < self.frame_size.vertical_resolution);
+        assert!(*x < self.frame_size.width);
+        assert!(*y < self.frame_size.height);
         self.pixels_per_scan_line * y + x
     }
 
@@ -72,7 +72,7 @@ impl Writer<'_> {
 
     pub fn clear(&mut self, color: &Color) {
         for x in 0..self.pixels_per_scan_line {
-            for y in 0..self.frame_size.vertical_resolution {
+            for y in 0..self.frame_size.height {
                 self.write_pixel(&PixelPoint { x, y }, color);
             }
         }
