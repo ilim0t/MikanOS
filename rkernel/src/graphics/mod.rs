@@ -1,7 +1,9 @@
 mod config;
-mod writer;
+mod console;
 mod types;
+mod writer;
 
 pub use config::*;
-pub use writer::*;
+pub use console::*;
 pub use types::*;
+pub use writer::*;

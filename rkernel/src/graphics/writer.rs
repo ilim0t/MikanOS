@@ -53,7 +53,7 @@ impl Writer<'_> {
         &mut self.frame_buffer[self.get_slice_index(point)]
     }
 
-    pub fn write(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
+    pub fn write_pixel(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
@@ -70,29 +70,29 @@ impl Writer<'_> {
         };
     }
 
-    pub fn write_all(&mut self, color: &Color) {
+    pub fn clear(&mut self, color: &Color) {
         for x in 0..self.pixels_per_scan_line {
             for y in 0..self.frame_size.vertical_resolution {
-                self.write(&PixelPoint { x, y }, color);
+                self.write_pixel(&PixelPoint { x, y }, color);
             }
         }
     }
 
-    pub fn write_strings(&mut self, &PixelPoint { x, y }: &PixelPoint, s: &[u8], color: &Color) {
-        for (i,& c) in s.iter().enumerate() {
-            self.write_ascii(&PixelPoint { x: x + i * 8, y }, c, color);
+    pub fn write_bytes(&mut self, &PixelPoint { x, y }: &PixelPoint, bytes: &[u8], color: &Color) {
+        for (i,& c) in bytes.iter().enumerate() {
+            self.write_byte(&PixelPoint { x: x + i * 8, y }, c, color);
         }
     }
 
-    pub fn write_ascii(&mut self, PixelPoint { x, y }: &PixelPoint, c: u8, color: &Color) {
-        let font = crate::font::get_font_data(c);
+    pub fn write_byte(&mut self, PixelPoint { x, y }: &PixelPoint, byte: u8, color: &Color) {
+        let font = crate::font::get_font_data(byte);
 
         for dy in 0..16 {
             for dx in 0..8 {
                 let a = font[dy];
                 let b = 0b1u8 << (7 - dx);
                 if (a & b) != 0 {
-                    self.write(
+                    self.write_pixel(
                         &PixelPoint {
                             x: x + dx,
                             y: y + dy,
