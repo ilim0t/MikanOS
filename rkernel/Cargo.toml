@@ -10,3 +10,4 @@ name = "kernel"
 path = "src/main.rs"
 
 [dependencies]
+spin = "0.9.2"
