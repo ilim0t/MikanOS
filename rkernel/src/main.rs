@@ -1,10 +1,9 @@
 #![no_std]
 #![no_main]
 
-use core::fmt::Write;
 use core::panic::PanicInfo;
 use rkernel::graphics::{Color, Console, FrameBufferConfig, Writer, CONSOLE};
-use rkernel::misc::*;
+use rkernel::{misc::*, println};
 
 /// この関数はパニック時に呼ばれる
 #[panic_handler]
@@ -54,9 +53,9 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
         .unwrap()
         .write_string("Hello, World! こんにちは\n");
 
-    writeln!(CONSOLE.lock().get_mut().unwrap(), "Hello, World!").unwrap();
-    writeln!(CONSOLE.lock().get_mut().unwrap(), "こんにちは、世界!").unwrap();
-    writeln!(CONSOLE.lock().get_mut().unwrap(), "1/3={}", 1. / 3.).unwrap();
+    println!("Hello, World!");
+    println!("こんにちは、世界!");
+    println!("1/3={}", 1. / 3.);
 
     halt();
 }
