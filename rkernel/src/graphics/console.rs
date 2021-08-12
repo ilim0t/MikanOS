@@ -94,6 +94,12 @@ impl Console {
         }
     }
 
+    pub fn write_bytes(&mut self, bytes: &[u8]) {
+        for &byte in bytes {
+            self.write_byte(byte);
+        }
+    }
+
     pub fn new_line(&mut self) {
         self.cursor.column = 0;
 
@@ -121,6 +127,18 @@ impl Console {
                 );
             }
         }
+    }
+    pub fn font_gallery(&mut self) {
+        for i in 0..=0xff {
+            let row = i as usize / 20;
+            let column = i as usize % 20;
+            self.buffer[row][column] = i;
+        }
+        self.cursor = Cursor {
+            row: 0xff / 20 + 1,
+            column: 0,
+        };
+        self.refresh();
     }
 }
 

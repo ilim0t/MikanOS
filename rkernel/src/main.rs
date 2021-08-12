@@ -32,29 +32,15 @@ fn init(frame_buffer_config: &FrameBufferConfig) {
 pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
     init(frame_buffer_config);
 
-    // for i in 0..0xff {
-    //     writer.write_byte(
-    //         &PixelPoint {
-    //             x: (8 * (i % 20)) as usize,
-    //             y: (16 * (i / 20)) as usize,
-    //         },
-    //         i,
-    //         &Color {
-    //             r: 255,
-    //             g: 255,
-    //             b: 255,
-    //         },
-    //     );
-    // }
+    CONSOLE.lock().get_mut().unwrap().font_gallery();
 
     CONSOLE
         .lock()
         .get_mut()
         .unwrap()
-        .write_string("Hello, World! こんにちは\n");
+        .write_bytes(b"Hello, World!\n");
 
-    println!("Hello, World!");
-    println!("こんにちは、世界!");
+    println!("Hello, World! こんにちは、世界!");
     println!("1/3={}", 1. / 3.);
 
     halt();
