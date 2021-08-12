@@ -12,21 +12,26 @@ fn panic(_panic: &PanicInfo) -> ! {
     loop {}
 }
 
+fn init(frame_buffer_config: &FrameBufferConfig) {
+    CONSOLE.lock().call_once(|| {
+        let writer = Writer::new(frame_buffer_config);
+        // let point = writer.at(&PixelPoint { x: 120000, y: 200000 });  // panic
+
+        Console::new(
+            writer,
+            Color { r: 0, g: 20, b: 0 },
+            Color {
+                r: 255,
+                g: 255,
+                b: 255,
+            },
+        )
+    });
+}
+
 #[no_mangle]
 pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
-    let writer = Writer::new(frame_buffer_config);
-    // let point = writer.at(&PixelPoint { x: 120000, y: 200000 });  // panic
-
-    let console = Console::new(
-        writer,
-        Color { r: 0, g: 20, b: 0 },
-        Color {
-            r: 255,
-            g: 255,
-            b: 255,
-        },
-    );
-    *CONSOLE.lock() = console;
+    init(frame_buffer_config);
 
     // for i in 0..0xff {
     //     writer.write_byte(
@@ -43,11 +48,15 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
     //     );
     // }
 
-    CONSOLE.lock().write_string("Hello, World! こんにちは\n");
+    CONSOLE
+        .lock()
+        .get_mut()
+        .unwrap()
+        .write_string("Hello, World! こんにちは\n");
 
-    writeln!(CONSOLE.lock(), "Hello, World!").unwrap();
-    writeln!(CONSOLE.lock(), "こんにちは、世界!").unwrap();
-    writeln!(CONSOLE.lock(), "1/3={}", 1. / 3.).unwrap();
+    writeln!(CONSOLE.lock().get_mut().unwrap(), "Hello, World!").unwrap();
+    writeln!(CONSOLE.lock().get_mut().unwrap(), "こんにちは、世界!").unwrap();
+    writeln!(CONSOLE.lock().get_mut().unwrap(), "1/3={}", 1. / 3.).unwrap();
 
     halt();
 }
