@@ -7,7 +7,8 @@ use rkernel::{misc::*, println};
 
 /// この関数はパニック時に呼ばれる
 #[panic_handler]
-fn panic(_panic: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
@@ -42,6 +43,8 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
 
     println!("Hello, World! こんにちは、世界!");
     println!("1/3={}", 1. / 3.);
+
+    // panic!("Some panic message");
 
     halt();
 }
