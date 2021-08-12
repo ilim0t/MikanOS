@@ -51,7 +51,7 @@ impl StringBuffer {
 }
 
 pub struct Console {
-    writer: Writer,
+    writer: PixelWriter,
     bg_color: Color,
     fg_color: Color,
     cursor: Cursor,
@@ -59,7 +59,7 @@ pub struct Console {
 }
 
 impl Console {
-    pub fn new(writer: Writer, bg_color: Color, fg_color: Color) -> Console {
+    pub fn new(writer: PixelWriter, bg_color: Color, fg_color: Color) -> Console {
         let mut console = Console {
             writer,
             bg_color,

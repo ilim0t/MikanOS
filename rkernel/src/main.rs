@@ -2,7 +2,7 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use rkernel::graphics::{Color, Console, FrameBufferConfig, Writer, CONSOLE};
+use rkernel::graphics::{Color, Console, FrameBufferConfig, PixelWriter, CONSOLE};
 use rkernel::{misc::*, println};
 
 /// この関数はパニック時に呼ばれる
@@ -13,11 +13,11 @@ fn panic(_panic: &PanicInfo) -> ! {
 
 fn init(frame_buffer_config: &FrameBufferConfig) {
     CONSOLE.lock().call_once(|| {
-        let writer = Writer::new(frame_buffer_config);
-        // let point = writer.at(&PixelPoint { x: 120000, y: 200000 });  // panic
+        let pixel_writer = PixelWriter::new(frame_buffer_config);
+        // let point = pixel_writer.at(&PixelPoint { x: 120000, y: 200000 });  // panic
 
         Console::new(
-            writer,
+            pixel_writer,
             Color { r: 0, g: 20, b: 0 },
             Color {
                 r: 255,

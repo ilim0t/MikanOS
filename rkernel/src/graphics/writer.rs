@@ -9,15 +9,15 @@ pub struct FrameSize {
     pub height: usize,
 }
 
-pub struct Writer {
+pub struct PixelWriter {
     frame_buffer: &'static mut [Buffer],
     pixel_format: PixelFormat,
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
 }
 
-impl Writer {
-    pub fn new(config: &FrameBufferConfig) -> Writer {
+impl PixelWriter {
+    pub fn new(config: &FrameBufferConfig) -> PixelWriter {
         let frame_size = FrameSize {
             width: config.horizontal_resolution as usize,
             height: config.vertical_resolution as usize,
@@ -30,7 +30,7 @@ impl Writer {
             )
         };
 
-        Writer {
+        PixelWriter {
             frame_buffer,
             pixel_format: config.pixel_format,
             frame_size,
