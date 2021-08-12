@@ -50,6 +50,9 @@ impl StringBuffer {
     }
 }
 
+#[allow(dead_code)]
+const HIRAKANA: &str = "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜";
+
 #[derive(Debug)]
 pub struct Console {
     writer: PixelWriter,
