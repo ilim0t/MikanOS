@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "cc"
+version = "1.0.69"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e70cc2f62c6ce1868963827bd677764c62d07c3d9a3e1fb1177ee1a9ab199eb2"
+
+[[package]]
 name = "lock_api"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -16,6 +22,7 @@ name = "rkernel"
 version = "0.1.0"
 dependencies = [
  "spin",
+ "tsc",
 ]
 
 [[package]]
@@ -31,4 +38,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "511254be0c5bcf062b019a6c89c01a664aa359ded62f78aa72c6fc137c0590e5"
 dependencies = [
  "lock_api",
+]
+
+[[package]]
+name = "tsc"
+version = "0.1.0"
+dependencies = [
+ "cc",
 ]
