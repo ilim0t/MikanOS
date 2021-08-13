@@ -61,15 +61,11 @@ impl PixelWriter {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = b;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = r;
+                *pixel_buffer = Buffer(r, g, b);
             }
             PixelFormat::KPixelBGRReserved8BitPerColor => {
                 let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = r;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = b;
+                *pixel_buffer = Buffer(b, g, r);
             }
         };
     }
