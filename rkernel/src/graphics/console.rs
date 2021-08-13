@@ -1,12 +1,11 @@
-use super::*;
-use core::{
-    fmt,
-    ops::{Index, IndexMut},
-};
+use super::{Color, PixelPoint, PixelWriter};
+use core::fmt;
+use core::ops::{Index, IndexMut};
 
 const ROW_MAX: usize = 25; // Height
 const COLUMN_MAX: usize = 80; // Width
 
+#[derive(Debug)]
 struct Cursor {
     column: usize,
     row: usize,
@@ -25,6 +24,7 @@ impl Cursor {
     }
 }
 
+#[derive(Debug)]
 struct StringBuffer {
     buffer: [[u8; COLUMN_MAX]; ROW_MAX],
 }
@@ -50,6 +50,7 @@ impl StringBuffer {
     }
 }
 
+#[derive(Debug)]
 pub struct Console {
     writer: PixelWriter,
     bg_color: Color,

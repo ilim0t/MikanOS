@@ -1,14 +1,18 @@
-use super::*;
+use super::config::PixelFormat;
+use super::{font, Color, FrameBufferConfig, PixelPoint};
 use core::slice;
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Buffer(u8, u8, u8, u8);
 
+#[derive(Debug, Clone, Copy)]
 pub struct FrameSize {
     pub width: usize,
     pub height: usize,
 }
 
+#[derive(Debug)]
 pub struct PixelWriter {
     frame_buffer: &'static mut [Buffer],
     pixel_format: PixelFormat,
@@ -85,7 +89,7 @@ impl PixelWriter {
     }
 
     pub fn write_byte(&mut self, PixelPoint { x, y }: &PixelPoint, byte: u8, color: &Color) {
-        let font = crate::font::get_font_data(byte);
+        let font = font::get_font_data(byte);
 
         for (dy, line) in font.iter().enumerate() {
             for dx in 0..8 {
