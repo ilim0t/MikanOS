@@ -1,8 +1,6 @@
-use super::*;
-use core::{
-    fmt,
-    ops::{Index, IndexMut},
-};
+use super::{Color, PixelPoint, PixelWriter};
+use core::fmt;
+use core::ops::{Index, IndexMut};
 
 const ROW_MAX: usize = 25; // Height
 const COLUMN_MAX: usize = 80; // Width

@@ -1,4 +1,4 @@
-use super::*;
+use super::Console;
 use core::fmt;
 use spin::{Mutex, Once};
 

@@ -1,4 +1,5 @@
-use super::*;
+use super::config::PixelFormat;
+use super::{font, Color, FrameBufferConfig, PixelPoint};
 use core::slice;
 
 #[repr(C)]
@@ -85,7 +86,7 @@ impl PixelWriter {
     }
 
     pub fn write_byte(&mut self, PixelPoint { x, y }: &PixelPoint, byte: u8, color: &Color) {
-        let font = crate::font::get_font_data(byte);
+        let font = font::get_font_data(byte);
 
         for (dy, line) in font.iter().enumerate() {
             for dx in 0..8 {
