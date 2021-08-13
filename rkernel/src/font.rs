@@ -1,5 +1,5 @@
-pub fn get_font_data(string: u8) -> [u8; 16] {
-    match string as u8 {
+pub fn get_font_data(byte: u8) -> [u8; 16] {
+    match byte as u8 {
         0x00 => [
             0b00000000,
             0b00000000,
