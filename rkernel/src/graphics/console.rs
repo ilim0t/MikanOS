@@ -6,7 +6,7 @@ const ROW_MAX: usize = 25; // Height
 const COLUMN_MAX: usize = 80; // Width
 
 #[derive(Debug)]
-struct Cursor {
+pub struct Cursor {
     column: usize,
     row: usize,
 }
@@ -53,9 +53,9 @@ impl StringBuffer {
 #[derive(Debug)]
 pub struct Console {
     writer: PixelWriter,
-    bg_color: Color,
-    fg_color: Color,
-    cursor: Cursor,
+    pub bg_color: Color,
+    pub fg_color: Color,
+    pub cursor: Cursor,
     buffer: StringBuffer,
 }
 
@@ -129,6 +129,13 @@ impl Console {
             }
         }
     }
+
+    pub fn clear(&mut self) {
+        self.cursor = Cursor::new();
+        self.buffer = StringBuffer::new();
+        self.writer.clear(&self.bg_color);
+    }
+
     pub fn font_gallery(&mut self) {
         for i in 0..=0xff {
             let row = i as usize / 20;
