@@ -1,11 +1,14 @@
 #[allow(dead_code)]
-#[derive(Clone, Copy)]
+
+
+#[derive(Debug, Clone, Copy)]
 #[repr(C)] // #[repr(u32)]
 pub enum PixelFormat {
     KPixelRGBReserved8BitPerColor,
     KPixelBGRReserved8BitPerColor,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct FrameBufferConfig {
     pub frame_buffer: *mut u8,
