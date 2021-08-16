@@ -68,6 +68,7 @@ impl PixelWriter {
         &mut self.frame_buffer[self.get_slice_index(point)]
     }
 
+    #[inline(never)]
     pub fn write_pixel(&mut self, point: &PixelPoint, color: &Color) {
         let _writer = self.writer;
         let pixel_buffer = self.at_mut(point);
