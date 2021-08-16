@@ -72,8 +72,8 @@ impl PixelWriter {
     }
 
     pub fn clear(&mut self, color: &Color) {
-        for x in 0..self.pixels_per_scan_line {
-            for y in 0..self.frame_size.height {
+        for y in 0..self.frame_size.height {
+            for x in 0..self.pixels_per_scan_line {
                 self.write_pixel(&PixelPoint { x, y }, color);
             }
         }
