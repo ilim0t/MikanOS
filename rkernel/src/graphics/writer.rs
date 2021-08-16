@@ -1,8 +1,9 @@
 use super::config::PixelFormat;
 use super::{font, Color, FrameBufferConfig, PixelPoint};
 use core::slice;
+use volatile::Volatile;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 #[repr(align(4))]
 pub struct Buffer(u8, u8, u8);
 
@@ -13,18 +14,18 @@ pub struct FrameSize {
 }
 
 pub struct PixelWriter {
-    frame_buffer: &'static mut [Buffer],
-    writer: &'static (dyn Fn(&mut Buffer, &Color) + Sync),
+    frame_buffer: Volatile<&'static mut [Buffer]>,
+    writer: &'static (dyn Fn(Volatile<&mut Buffer>, &Color) + Sync),
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
 }
 
-fn write_rgb_pixel(pixel_buffer: &mut Buffer, &Color { r, g, b }: &Color) {
-    *pixel_buffer = Buffer(r, g, b);
+fn write_rgb_pixel(mut pixel_buffer: Volatile<&mut Buffer>, &Color { r, g, b }: &Color) {
+    pixel_buffer.write(Buffer(r, g, b));
 }
 
-fn write_bgr_pixel(pixel_buffer: &mut Buffer, &Color { r, g, b }: &Color) {
-    *pixel_buffer = Buffer(b, g, r);
+fn write_bgr_pixel(mut pixel_buffer: Volatile<&mut Buffer>, &Color { r, g, b }: &Color) {
+    pixel_buffer.write(Buffer(b, g, r));
 }
 
 impl PixelWriter {
@@ -40,8 +41,9 @@ impl PixelWriter {
                 frame_size.height * pixels_per_scan_line,
             )
         };
+        let frame_buffer = Volatile::new(frame_buffer);
 
-        let writer: &(dyn Fn(&mut Buffer, &Color) + Sync) = match config.pixel_format {
+        let writer: &(dyn Fn(Volatile<&mut Buffer>, &Color) + Sync) = match config.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => &write_rgb_pixel,
             PixelFormat::KPixelBGRReserved8BitPerColor => &write_bgr_pixel,
         };
@@ -60,12 +62,12 @@ impl PixelWriter {
         self.pixels_per_scan_line * y + x
     }
 
-    pub fn at(&self, point: &PixelPoint) -> &Buffer {
-        &self.frame_buffer[self.get_slice_index(point)]
+    pub fn at(&self, point: &PixelPoint) -> Volatile<&Buffer> {
+        self.frame_buffer.index(self.get_slice_index(point))
     }
 
-    fn at_mut(&mut self, point: &PixelPoint) -> &mut Buffer {
-        &mut self.frame_buffer[self.get_slice_index(point)]
+    fn at_mut(&mut self, point: &PixelPoint) -> Volatile<&mut Buffer> {
+        self.frame_buffer.index_mut(self.get_slice_index(point))
     }
 
     pub fn write_pixel(&mut self, point: &PixelPoint, color: &Color) {
