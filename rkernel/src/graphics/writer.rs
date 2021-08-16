@@ -13,9 +13,8 @@ pub struct FrameSize {
     pub height: usize,
 }
 
-#[derive(Debug)]
 pub struct PixelWriter {
-    frame_buffer: &'static mut [Volatile<Buffer>],
+    frame_buffer: Volatile<&'static mut [Buffer]>,
     pixel_format: PixelFormat,
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
@@ -30,16 +29,16 @@ impl PixelWriter {
         let pixels_per_scan_line = config.pixels_per_scan_line as usize;
         let frame_buffer = unsafe {
             slice::from_raw_parts_mut(
-                config.frame_buffer as *mut Volatile<Buffer>,
+                config.frame_buffer as *mut Buffer,
                 frame_size.height * pixels_per_scan_line,
             )
         };
+        let frame_buffer = Volatile::new(frame_buffer);
 
         PixelWriter {
             frame_buffer,
             pixel_format: config.pixel_format,
             frame_size,
-
             pixels_per_scan_line,
         }
     }
@@ -50,22 +49,22 @@ impl PixelWriter {
         self.pixels_per_scan_line * y + x
     }
 
-    pub fn at(&self, point: &PixelPoint) -> &Volatile<Buffer> {
-        &self.frame_buffer[self.get_slice_index(point)]
+    pub fn at(&self, point: &PixelPoint) -> Volatile<&Buffer> {
+        self.frame_buffer.index(self.get_slice_index(point))
     }
 
-    fn at_mut(&mut self, point: &PixelPoint) -> &mut Volatile<Buffer> {
-        &mut self.frame_buffer[self.get_slice_index(point)]
+    fn at_mut(&mut self, point: &PixelPoint) -> Volatile<&mut Buffer> {
+        self.frame_buffer.index_mut(self.get_slice_index(point))
     }
 
     pub fn write_pixel(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
+                let mut pixel_buffer = self.at_mut(point);
                 pixel_buffer.write(Buffer(r, g, b));
             }
             PixelFormat::KPixelBGRReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
+                let mut pixel_buffer = self.at_mut(point);
                 pixel_buffer.write(Buffer(b, g, r));
             }
         };
