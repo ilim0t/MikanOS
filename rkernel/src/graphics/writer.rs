@@ -69,9 +69,9 @@ impl PixelWriter {
     }
 
     pub fn write_pixel(&mut self, point: &PixelPoint, color: &Color) {
-        let writer = self.writer;
+        let _writer = self.writer;
         let pixel_buffer = self.at_mut(point);
-        writer(pixel_buffer, color);
+        write_bgr_pixel(pixel_buffer, color);
     }
 
     pub fn clear(&mut self, color: &Color) {
