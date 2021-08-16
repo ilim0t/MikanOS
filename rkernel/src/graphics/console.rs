@@ -50,7 +50,6 @@ impl StringBuffer {
     }
 }
 
-#[derive(Debug)]
 pub struct Console {
     writer: PixelWriter,
     pub bg_color: Color,
