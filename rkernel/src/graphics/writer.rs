@@ -3,8 +3,8 @@ use super::{font, Color, FrameBufferConfig, PixelPoint};
 use core::slice;
 
 #[derive(Debug)]
-#[repr(C)]
-pub struct Buffer(u8, u8, u8, u8);
+#[repr(align(4))]
+pub struct Buffer(u8, u8, u8);
 
 #[derive(Debug, Clone, Copy)]
 pub struct FrameSize {
