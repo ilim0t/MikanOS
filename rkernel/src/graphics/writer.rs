@@ -12,12 +12,19 @@ pub struct FrameSize {
     pub height: usize,
 }
 
-#[derive(Debug)]
 pub struct PixelWriter {
     frame_buffer: &'static mut [Buffer],
-    pixel_format: PixelFormat,
+    writer: &'static (dyn Fn(&mut Buffer, &Color) + Sync),
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
+}
+
+fn write_rgb_pixel(pixel_buffer: &mut Buffer, &Color { r, g, b }: &Color) {
+    *pixel_buffer = Buffer(r, g, b);
+}
+
+fn write_bgr_pixel(pixel_buffer: &mut Buffer, &Color { r, g, b }: &Color) {
+    *pixel_buffer = Buffer(b, g, r);
 }
 
 impl PixelWriter {
@@ -34,11 +41,15 @@ impl PixelWriter {
             )
         };
 
+        let writer: &(dyn Fn(&mut Buffer, &Color) + Sync) = match config.pixel_format {
+            PixelFormat::KPixelRGBReserved8BitPerColor => &write_rgb_pixel,
+            PixelFormat::KPixelBGRReserved8BitPerColor => &write_bgr_pixel,
+        };
+
         PixelWriter {
             frame_buffer,
-            pixel_format: config.pixel_format,
+            writer,
             frame_size,
-
             pixels_per_scan_line,
         }
     }
@@ -57,21 +68,10 @@ impl PixelWriter {
         &mut self.frame_buffer[self.get_slice_index(point)]
     }
 
-    pub fn write_pixel(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
-        match self.pixel_format {
-            PixelFormat::KPixelRGBReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = b;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = r;
-            }
-            PixelFormat::KPixelBGRReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = r;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = b;
-            }
-        };
+    pub fn write_pixel(&mut self, point: &PixelPoint, color: &Color) {
+        let writer = self.writer;
+        let pixel_buffer = self.at_mut(point);
+        writer(pixel_buffer, color);
     }
 
     pub fn clear(&mut self, color: &Color) {
