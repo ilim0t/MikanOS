@@ -57,6 +57,7 @@ impl PixelWriter {
         self.frame_buffer.index_mut(self.get_slice_index(point))
     }
 
+    #[inline(always)]
     pub fn write_pixel(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
