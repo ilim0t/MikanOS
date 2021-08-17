@@ -1,7 +1,9 @@
 version: "3.9"
 services:
   build_efi:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-c
     platform: linux/amd64
     working_dir: /root/edk2/
     command: bash -c "source edksetup.sh && build && cp /root/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi /root/Build/"
@@ -11,7 +13,9 @@ services:
       - ./bootloader/Build:/root/Build/
 
   build_ckernel:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-c
     platform: linux/amd64
     working_dir: /root/mikanos/ckernel/
     command: bash -c "source /root/osbook/devenv/buildenv.sh && make"
