@@ -3,7 +3,7 @@
 
 use core::panic::PanicInfo;
 use rkernel::graphics::{Color, Console, FrameBufferConfig, PixelWriter, CONSOLE};
-use rkernel::{misc::*, println};
+use rkernel::{misc::*, print, println};
 
 /// この関数はパニック時に呼ばれる
 #[panic_handler]
@@ -43,6 +43,13 @@ pub extern "C" fn _start(frame_buffer_config: &FrameBufferConfig) -> ! {
 
     println!("Hello, World! こんにちは、世界!");
     println!("1/3={}", 1. / 3.);
+
+    for x in 1..=19 {
+        for y in 1..=19 {
+            print!("{: >4}", x * y);
+        }
+        println!();
+    }
 
     // panic!("Some panic message");
 
