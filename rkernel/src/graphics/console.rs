@@ -5,7 +5,7 @@ use core::ops::{Index, IndexMut};
 const ROW_MAX: usize = 25; // Height
 const COLUMN_MAX: usize = 80; // Width
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Cursor {
     column: usize,
     row: usize,
@@ -138,14 +138,14 @@ impl Console {
 
     pub fn font_gallery(&mut self) {
         for i in 0..=0xff {
-            let row = i as usize / 20;
+            if i % 20 == 0 && self.cursor.column != 0 {
+                self.new_line();
+            }
             let column = i as usize % 20;
-            self.buffer[row][column] = i;
+            self.buffer[self.cursor.row][column] = i;
+            self.cursor.column += 1;
         }
-        self.cursor = Cursor {
-            row: 0xff / 20 + 1,
-            column: 0,
-        };
+        self.new_line();
         self.refresh();
     }
 }
