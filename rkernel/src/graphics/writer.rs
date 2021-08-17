@@ -1,8 +1,9 @@
 use super::config::PixelFormat;
 use super::{font, Color, FrameBufferConfig, PixelPoint};
 use core::slice;
+use volatile::Volatile;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 #[repr(align(4))]
 pub struct Buffer(u8, u8, u8);
 
@@ -12,9 +13,8 @@ pub struct FrameSize {
     pub height: usize,
 }
 
-#[derive(Debug)]
 pub struct PixelWriter {
-    frame_buffer: &'static mut [Buffer],
+    frame_buffer: Volatile<&'static mut [Buffer]>,
     pixel_format: PixelFormat,
     pub frame_size: FrameSize,
     pixels_per_scan_line: usize,
@@ -33,12 +33,12 @@ impl PixelWriter {
                 frame_size.height * pixels_per_scan_line,
             )
         };
+        let frame_buffer = Volatile::new(frame_buffer);
 
         PixelWriter {
             frame_buffer,
             pixel_format: config.pixel_format,
             frame_size,
-
             pixels_per_scan_line,
         }
     }
@@ -49,34 +49,31 @@ impl PixelWriter {
         self.pixels_per_scan_line * y + x
     }
 
-    pub fn at(&self, point: &PixelPoint) -> &Buffer {
-        &self.frame_buffer[self.get_slice_index(point)]
+    pub fn at(&self, point: &PixelPoint) -> Volatile<&Buffer> {
+        self.frame_buffer.index(self.get_slice_index(point))
     }
 
-    fn at_mut(&mut self, point: &PixelPoint) -> &mut Buffer {
-        &mut self.frame_buffer[self.get_slice_index(point)]
+    fn at_mut(&mut self, point: &PixelPoint) -> Volatile<&mut Buffer> {
+        self.frame_buffer.index_mut(self.get_slice_index(point))
     }
 
+    #[inline(always)]
     pub fn write_pixel(&mut self, point: &PixelPoint, &Color { r, g, b }: &Color) {
         match self.pixel_format {
             PixelFormat::KPixelRGBReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = b;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = r;
+                let mut pixel_buffer = self.at_mut(point);
+                pixel_buffer.write(Buffer(r, g, b));
             }
             PixelFormat::KPixelBGRReserved8BitPerColor => {
-                let pixel_buffer = self.at_mut(point);
-                pixel_buffer.0 = r;
-                pixel_buffer.1 = g;
-                pixel_buffer.2 = b;
+                let mut pixel_buffer = self.at_mut(point);
+                pixel_buffer.write(Buffer(b, g, r));
             }
         };
     }
 
     pub fn clear(&mut self, color: &Color) {
-        for x in 0..self.pixels_per_scan_line {
-            for y in 0..self.frame_size.height {
+        for y in 0..self.frame_size.height {
+            for x in 0..self.pixels_per_scan_line {
                 self.write_pixel(&PixelPoint { x, y }, color);
             }
         }
