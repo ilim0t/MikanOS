@@ -103,4 +103,32 @@ impl PixelWriter {
             }
         }
     }
+
+    pub fn write_byte_all(
+        &mut self,
+        PixelPoint { x, y }: &PixelPoint,
+        byte: u8,
+        fg_color: &Color,
+        bg_color: &Color,
+    ) {
+        let font = font::get_font_data(byte);
+
+        for (dy, line) in font.iter().enumerate() {
+            for dx in 0..8 {
+                let mask = 1 << (7 - dx);
+                let color = if (line & mask) != 0 {
+                    fg_color
+                } else {
+                    bg_color
+                };
+                self.write_pixel(
+                    &PixelPoint {
+                        x: x + dx,
+                        y: y + dy,
+                    },
+                    color,
+                );
+            }
+        }
+    }
 }

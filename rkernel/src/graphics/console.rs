@@ -116,14 +116,15 @@ impl Console {
     }
 
     pub fn refresh(&mut self) {
-        self.writer.clear(&self.bg_color);
+        // self.writer.clear(&self.bg_color);
 
         for row in 0..ROW_MAX {
             for column in 0..COLUMN_MAX {
-                self.writer.write_byte(
+                self.writer.write_byte_all(
                     &Cursor { row, column }.to_pixel(),
                     self.buffer[row][column],
                     &self.fg_color,
+                    &self.bg_color,
                 );
             }
         }
